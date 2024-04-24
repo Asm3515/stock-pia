@@ -1,0 +1,40 @@
+.scrollable-container {
+    max-height: 400px; /* Set the maximum height as per your requirement */
+    overflow-y: auto; /* Enable vertical scrolling */
+    margin-top: 100px;
+}
+
+.about--section {
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-bottom: 20px;
+}
+
+.hero--section--content--box {
+    background-color: #f9f9f9;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.skills-section--heading {
+    color: #333;
+}
+
+.section--title {
+    color: #555;
+}
+
+.hero--section-description {
+    color: #777;
+}
+
+.hero--section-description ul {
+    list-style-type: disc;
+    margin-left: 20px;
+}
+
+.hero--section-description ul li {
+    margin-bottom: 5px;
+}

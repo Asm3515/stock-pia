@@ -6,10 +6,20 @@
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
+    "chart.js": "^4.4.2",
+    "chartjs-adapter-moment": "^1.0.1",
+    "cors": "^2.8.5",
+    "plotly": "^1.0.6",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-scripts": "5.0.1",
-    "web-vitals": "^2.1.4"
+    "react-helmet": "^6.1.0",
+    "react-plotlyjs": "^0.4.4",
+    "react-router-dom": "^6.23.0",
+    "react-scripts": "^5.0.1",
+    "react-scroll": "^1.9.0",
+    "router-dom": "^2.2.11",
+    "web-vitals": "^2.1.4",
+    "yahoo-finance": "^0.3.8"
   },
   "scripts": {
     "start": "react-scripts start",

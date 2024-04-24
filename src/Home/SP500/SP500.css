@@ -1,0 +1,60 @@
+/* SP500.css */
+
+/* Ensure the whole page is in the background of the graph */
+body {
+    
+    background-color: #E8DFCA; /* Set background color of the body */
+    
+}
+
+/* Style for the SP500Live component */
+.Graph {
+    width: 1100px; /* Set width of the component */
+    border-radius: 10px; /* Add border radius for a rounded appearance */
+    padding: 20px; /* Add padding */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Add box shadow for depth */
+    margin-left: auto; /* Move the component to the right */
+    margin-right: 20px; /* Add margin to the right side */
+}
+
+
+
+.scrollable-container {
+    max-height: calc(100vh - 80px); /* Set the maximum height minus Navbar height */
+    overflow-y: hidden; /* Enable vertical scrolling */
+    padding-top: 110px;  /* Add top margin equal to Navbar height */
+    display: flex;
+  }
+  
+  .nametag_live {
+    text-align: center; /* Center align the nametag */
+    margin-top: 20px; /* Add top margin */
+    color: #12372A; /* Set text color to #12372A */
+    font-size: 20px; /* Set font size */
+    font-weight: bold; /* Set font weight to bold */
+  }
+  
+
+  .NotGraph {
+    display: flex;
+    flex-direction: column;
+    
+    
+  }
+
+  .Wid1{
+    padding-top: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Add box shadow for depth */
+    border-radius: 10px;
+    padding-bottom: 20px;
+  }
+
+  .Wid2{
+    padding-top: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Add box shadow for depth */
+    border-radius: 10px;
+    padding-bottom: 20px;
+  }
+
+
+  

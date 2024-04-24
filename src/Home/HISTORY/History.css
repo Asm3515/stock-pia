@@ -1,0 +1,9 @@
+.scrollable-container-proto {
+    max-height: calc(100vh - 80px); /* Set the maximum height minus Navbar height */
+    overflow-y: visible; /* Enable vertical scrolling */
+    padding-top: 110px;  /* Add top margin equal to Navbar height */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
