@@ -7,3 +7,10 @@
     align-items: center;
   }
   
+  .plot-image img {
+    width: 100%; /* Ensure all images occupy 100% width */
+    height: auto; /* Maintain aspect ratio */
+    max-width: 1000px; /* Limit maximum width to 500px */
+    max-height: 1000px; /* Limit maximum height to 500px */
+  }
+  

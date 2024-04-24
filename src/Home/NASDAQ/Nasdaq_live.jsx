@@ -1,5 +1,3 @@
-// SP500Live.js
-
 import React, { useEffect, useState, useRef } from 'react';
 import Chart from 'chart.js/auto';
 import moment from 'moment';
@@ -12,6 +10,7 @@ import 'chartjs-adapter-moment';
 
 const Nasdaq_Live = () => {
   const [latestData, setLatestData] = useState([]);
+  const [alertMessage, setAlertMessage] = useState("");
   const chartRef = useRef(null);
   const [chart, setChart] = useState(null);
   const [isDataFetched, setIsDataFetched] = useState(false);
@@ -126,6 +125,29 @@ const Nasdaq_Live = () => {
     }
   }, [isDataFetched, latestData, chart]);
 
+  useEffect(() => {
+    const fetchAlert = async () => {
+      try {
+        const response = await fetch('http://127.0.0.1:5000/nasdaq/alert', {
+          method: 'GET'
+        });
+        const jsonData = await response.json();
+        console.log('Retrieved Alert Data:', jsonData);
+        setAlertMessage(jsonData.alert_message);
+        if (jsonData.alert_message) {
+          window.alert(jsonData.alert_message); // Display alert message
+        }
+      } catch (error) {
+        console.error('Error fetching alert data:', error);
+      }
+    };
+
+    const fetchAlertInterval = setInterval(fetchAlert, 60000); // Fetch alert every 15 minutes
+
+    fetchAlert();
+
+    return () => clearInterval(fetchAlertInterval);
+  }, []);
 
   return (
     <div className="scrollable-container">
@@ -133,6 +155,7 @@ const Nasdaq_Live = () => {
     <div className='Graph'>
       {isDataFetched && <canvas ref={chartRef} width={600} height={400}></canvas>}
       <h2 className='nametag_live'>NASDAQ Live Dashboard</h2>
+      
     </div> 
 
     <div className="NotGraph">   

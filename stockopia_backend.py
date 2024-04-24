@@ -4,6 +4,7 @@ from datetime import datetime, timedelta
 from flask_cors import CORS
 import numpy as np
 
+
 app = Flask(__name__)
 CORS(app)
 
@@ -187,9 +188,92 @@ def get_anomalies():
     return jsonify(anomalies)
 
 
+from datetime import timedelta
 
 
+def check_market_behavior(symbol, duration=timedelta(minutes=20), interval=timedelta(minutes=5)):
+    """
+    Check market behavior over a specified duration.
+    Returns True if the market has fallen or risen, otherwise False.
+    """
 
+    stock = yf.Ticker(symbol)
+    # Get data for the specified duration
+    end_time = datetime.now()
+    start_time = end_time - duration
+
+    data = stock.history(start=start_time, end=end_time, interval="1m")
+
+    # Calculate percentage change over the duration
+    percentage_change = (data['Close'].iloc[-1] - data['Close'].iloc[0]) / data['Close'].iloc[0] * 100
+
+    return percentage_change
+def compare_and_alert(symbol):
+    # Get data for the last 7 days
+
+    percentage_change_20_minutes = check_market_behavior(symbol)
+
+    stock = yf.Ticker(symbol)
+    end_date_7days = datetime.now()
+    start_date_7days = end_date_7days - timedelta(days=7)
+    data_7days = stock.history(start=start_date_7days, end=end_date_7days, interval="5m")
+
+    # Calculate average price for the last 7 days
+    average_price_7days = data_7days['Close'].mean()
+
+    # Get data for the last 1 month
+    end_date_1month = datetime.now()
+    start_date_1month = end_date_1month - timedelta(days=30)
+    data_1month = stock.history(start=start_date_1month, end=end_date_1month, interval="5m")
+    threshold = 0.5
+    # Calculate average price for the last 1 month
+    average_price_1month = data_1month['Close'].mean()
+
+    # Check if the market has fallen or risen in the last 20 minutes
+    if percentage_change_20_minutes < -threshold:
+        alert_message = f"The market has fallen by {abs(percentage_change_20_minutes):.2f}% in the last 20 minutes."
+    elif percentage_change_20_minutes > threshold:
+        alert_message = f"The market has risen by {percentage_change_20_minutes:.2f}% in the last 20 minutes."
+    else:
+        alert_message = "OK"
+
+    # Compare last 7 days average with last 1 month average
+    if average_price_7days > average_price_1month:
+        alert_message = f"The average price for the last 7 days ({average_price_7days}) is higher than the average price for the last 1 month ({average_price_1month})."
+    elif average_price_7days < average_price_1month:
+        alert_message = f"The average price for the last 7 days ({average_price_7days}) is lower than the average price for the last 1 month ({average_price_1month})."
+    else:
+        alert_message = "The average prices for the last 7 days and the last 1 month are equal."
+
+    # Check recent market behavior
+    data_recent = get_data(symbol)
+    latest_price = data_recent['Close'].iloc[-1]
+    average_percentage_change = (data_recent['Close'].iloc[-1] - data_recent['Close'].iloc[-8]) / data_recent['Close'].iloc[-8] * 100
+
+    # Define threshold for market behavior
+    threshold = 0.5  # 0.5 percentage change
+    if latest_price < average_price_7days - threshold:
+        alert_message += f" The market has fallen by {threshold}% compared to the average price for the last 7 days."
+    elif latest_price > average_price_7days + threshold:
+        alert_message += f" The market has risen by {threshold}% compared to the average price for the last 7 days."
+
+    # If no alert conditions are met, return "OK"
+    if "fallen" not in alert_message.lower() and "risen" not in alert_message.lower():
+        return "OK"
+    else:
+        return alert_message
+
+@app.route('/alert')
+def get_alert():
+    symbol = request.args.get('symbol', default="^GSPC", type=str)  # Default to S&P 500 if symbol is not provided
+    alert_message = compare_and_alert(symbol)
+    return jsonify({'alert_message': alert_message})
+
+@app.route('/nasdaq/alert')
+def get_nasdaq_alert():  # Renamed the function to 'get_nasdaq_alert'
+    symbol = request.args.get('symbol', default="^IXIC", type=str)  # Default to NASDAQ if symbol is not provided
+    alert_message = compare_and_alert(symbol)
+    return jsonify({'alert_message': alert_message})
 
 
 
