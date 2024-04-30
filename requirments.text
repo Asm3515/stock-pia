@@ -1,0 +1,36 @@
+
+# Flask for the web application framework
+Flask==2.0.1
+
+# Requests for making HTTP requests to external APIs
+requests==2.25.1
+
+# Pandas for data manipulation and analysis
+pandas==1.2.4
+
+# NumPy for numerical operations
+numpy==1.20.3
+
+# yfinance for fetching historical market data
+yfinance==0.1.59
+
+# Flask-CORS to handle Cross-Origin Resource Sharing (CORS)
+Flask-CORS==3.0.10
+
+# PostgreSQL database adapter for Python
+psycopg2-binary==2.8.6
+
+# Chart.js integration (Note: This will be included in your JavaScript, not in Python requirements)
+# Mentioning here just for completeness
+
+# TensorFlow for machine learning models
+tensorflow==2.5.0
+
+# Keras for building the LSTM model, using TensorFlow backend
+keras==2.4.3
+
+# Scikit-learn for additional machine learning functionality
+scikit-learn==0.24.2
+
+# Matplotlib for plotting graphs in Python
+matplotlib==3.4.2
