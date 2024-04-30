@@ -48,6 +48,104 @@ def get_seven_days_data():
         'expectation': expectation
     })
 
+@app.route('/nasdaq/checkmarket/<float:percentage_change>')
+def check_market_nasdaq(percentage_change):
+    symbol = request.args.get('symbol', default="^IXIC", type=str)  # Default to S&P 500 if symbol is not provided
+
+    # Fetching data for today
+    end_date = datetime.now()
+    start_date = datetime.now().replace(hour=0, minute=0, second=0)
+    data_today = yf.Ticker(symbol).history(start=start_date, end=end_date, interval="1m")
+    if data_today.empty:
+        return jsonify({'error': 'No data found for today'}), 404
+
+    average_price_today = data_today['Close'].mean()
+
+    # Fetching data for the last 10 minutes
+    end_time = datetime.now()
+    start_time = end_time - timedelta(minutes=10)
+    data_recent = yf.Ticker(symbol).history(start=start_time, end=end_time, interval="2m")
+    if data_recent.empty:
+        return jsonify({'error': 'No data found for the last 10 minutes'}), 404
+
+    # Initialize variables to track consecutive threshold crossings
+    notifications = []
+    last_above_threshold = False
+    previous_time = None
+
+    for index, row in data_recent.iterrows():
+        current_price = row['Close']
+        difference_percentage = ((current_price - average_price_today) / average_price_today) * 100
+        print(difference_percentage)
+
+        # Check if the current price difference is above the threshold
+        if abs(difference_percentage) >= percentage_change:
+            if last_above_threshold and previous_time:
+                # If last was also above and there is a previously recorded time, add a notification
+                notifications.append(f"Market price was {'above' if difference_percentage > 0 else 'below'} the critical point by {abs(difference_percentage):.3f}% twice in a row starting at {previous_time}.")
+            # Update the last condition to true and record the current time
+            last_above_threshold = True
+            previous_time = index.strftime('%Y-%m-%d %H:%M:%S')
+        else:
+            # Reset if the current percentage is below the threshold
+            last_above_threshold = False
+
+    # Check if any notifications have been added, otherwise return a default message
+    if notifications:
+        return jsonify({'message': notifications[0]})
+    else:
+        return jsonify({'message': 'No significant changes detected.'})
+
+
+
+@app.route('/sp500/checkmarket/<float:percentage_change>')
+def check_market_sp500(percentage_change):
+    symbol = request.args.get('symbol', default="^GSPC", type=str)  # Default to S&P 500 if symbol is not provided
+
+    # Fetching data for today
+    end_date = datetime.now()
+    start_date = datetime.now().replace(hour=0, minute=0, second=0)
+    data_today = yf.Ticker(symbol).history(start=start_date, end=end_date, interval="1m")
+    if data_today.empty:
+        return jsonify({'error': 'No data found for today'}), 404
+
+    average_price_today = data_today['Close'].mean()
+
+    # Fetching data for the last 10 minutes
+    end_time = datetime.now()
+    start_time = end_time - timedelta(minutes=10)
+    data_recent = yf.Ticker(symbol).history(start=start_time, end=end_time, interval="2m")
+    if data_recent.empty:
+        return jsonify({'error': 'No data found for the last 10 minutes'}), 404
+
+    # Initialize variables to track consecutive threshold crossings
+    notifications = []
+    last_above_threshold = False
+    previous_time = None
+
+    for index, row in data_recent.iterrows():
+        current_price = row['Close']
+        difference_percentage = ((current_price - average_price_today) / average_price_today) * 100
+
+        # Check if the current price difference is above the threshold
+        if abs(difference_percentage) >= percentage_change:
+            if last_above_threshold and previous_time:
+                # If last was also above and there is a previously recorded time, add a notification
+                notifications.append(f"Market price was {'above' if difference_percentage > 0 else 'below'} the critical point by {abs(difference_percentage):.3f}% twice in a row starting at {previous_time}.")
+            # Update the last condition to true and record the current time
+            last_above_threshold = True
+            previous_time = index.strftime('%Y-%m-%d %H:%M:%S')
+        else:
+            # Reset if the current percentage is below the threshold
+            last_above_threshold = False
+
+    # Check if any notifications have been added, otherwise return a default message
+    if notifications:
+        return jsonify({'message': notifications[0]})
+    else:
+        return jsonify({'message': 'No significant changes detected.'})
+
+
 @app.route('/1month')
 def get_one_month_data():
     end_date = datetime.now()
@@ -245,7 +343,7 @@ def compare_and_alert(symbol):
     else:
         alert_message = "The average prices for the last 7 days and the last 1 month are equal."
 
-    # Check recent market behavior
+    # Check recent market behaviorvsc
     data_recent = get_data(symbol)
     latest_price = data_recent['Close'].iloc[-1]
     average_percentage_change = (data_recent['Close'].iloc[-1] - data_recent['Close'].iloc[-8]) / data_recent['Close'].iloc[-8] * 100
@@ -270,10 +368,12 @@ def get_alert():
     return jsonify({'alert_message': alert_message})
 
 @app.route('/nasdaq/alert')
-def get_nasdaq_alert():  # Renamed the function to 'get_nasdaq_alert'
-    symbol = request.args.get('symbol', default="^IXIC", type=str)  # Default to NASDAQ if symbol is not provided
+def get_nasdaq_alert():
+    symbol = request.args.get('symbol', default="^IXIC", type=str)
     alert_message = compare_and_alert(symbol)
     return jsonify({'alert_message': alert_message})
+
+
 
 
 

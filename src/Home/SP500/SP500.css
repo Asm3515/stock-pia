@@ -9,11 +9,12 @@ body {
 
 /* Style for the SP500Live component */
 .Graph {
-    width: 1100px; /* Set width of the component */
+    width: 1900px; /* Set width of the component */
+    height:auto;
     border-radius: 10px; /* Add border radius for a rounded appearance */
     padding: 20px; /* Add padding */
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Add box shadow for depth */
-    margin-left: auto; /* Move the component to the right */
+     /* Move the component to the right */
     margin-right: 20px; /* Add margin to the right side */
 }
 

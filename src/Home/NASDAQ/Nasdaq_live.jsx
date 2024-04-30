@@ -5,15 +5,50 @@ import './Nasdaq.css'; // Import CSS file
 import Navbar from '../../Navbar/Navbar';
 import Widget1_sp500 from "./Widget1_Nasdaq";
 import Widget2_sp500 from "./Widget2_Nasdaq";
-
 import 'chartjs-adapter-moment';
 
 const Nasdaq_Live = () => {
   const [latestData, setLatestData] = useState([]);
   const [alertMessage, setAlertMessage] = useState("");
+  const [percentageChange, setPercentageChange] = useState('');
   const chartRef = useRef(null);
   const [chart, setChart] = useState(null);
   const [isDataFetched, setIsDataFetched] = useState(false);
+  const alertCheckIntervalRef = useRef(null);
+
+  const handlePercentageChange = (e) => {
+    setPercentageChange(e.target.value); // Update the state with the user input
+  };
+
+  const submitPercentageChange = async () => {
+    try {
+      const response = await fetch(`http://127.0.0.1:5000/nasdaq/checkmarket/${percentageChange}`, {
+        method: 'GET'
+      });
+      const jsonData = await response.json();
+      console.log('Percentage Change Response:', jsonData);
+      if (jsonData.message) {
+        window.alert(jsonData.message); // Optionally show a message
+      }
+    } catch (error) {
+      console.error('Error submitting percentage change:', error);
+    }
+  };
+
+  // Setup to check for alerts based on the percentage change every 2 minutes
+  useEffect(() => {
+    if (percentageChange) {
+      alertCheckIntervalRef.current = setInterval(() => {
+        submitPercentageChange(); // Check the market based on the current threshold
+      },5000); // Every 120000 ms (2 minutes)
+    }
+
+    return () => {
+      if (alertCheckIntervalRef.current) {
+        clearInterval(alertCheckIntervalRef.current); // Clear the interval on cleanup
+      }
+    };
+  }, [percentageChange]); // Dependency on percentageChange
 
   useEffect(() => {
     const fetchData = async () => {
@@ -125,30 +160,6 @@ const Nasdaq_Live = () => {
     }
   }, [isDataFetched, latestData, chart]);
 
-  useEffect(() => {
-    const fetchAlert = async () => {
-      try {
-        const response = await fetch('http://127.0.0.1:5000/nasdaq/alert', {
-          method: 'GET'
-        });
-        const jsonData = await response.json();
-        console.log('Retrieved Alert Data:', jsonData);
-        setAlertMessage(jsonData.alert_message);
-        if (jsonData.alert_message) {
-          window.alert(jsonData.alert_message); // Display alert message
-        }
-      } catch (error) {
-        console.error('Error fetching alert data:', error);
-      }
-    };
-
-    const fetchAlertInterval = setInterval(fetchAlert, 60000); // Fetch alert every 15 minutes
-
-    fetchAlert();
-
-    return () => clearInterval(fetchAlertInterval);
-  }, []);
-
   return (
     <div className="scrollable-container">
         
@@ -162,6 +173,16 @@ const Nasdaq_Live = () => {
     <div className='Wid1'><Widget1_sp500/></div>
     <div className='Wid2'><Widget2_sp500/></div>
     </div> 
+    {/* Input and Button for Setting Percentage Change */}
+    <div>
+        <input
+          type="text"
+          value={percentageChange}
+          onChange={handlePercentageChange}
+          placeholder="Enter Percentage Change"
+        />
+        <button onClick={submitPercentageChange}>Set Alert Threshold</button>
+      </div>
     </div>
     
   );
